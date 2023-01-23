@@ -1,6 +1,8 @@
 var pageIdValue = Math.floor(Math.random() * 3);
 var existingPageIds = JSON.parse(localStorage.getItem("pageIds"));
+
 bindUnload();
+
 
 console.log("neue random: " + pageIdValue + " \n ExistingPages, die aus Local Storage gezogen wurden: " + existingPageIds)
 
@@ -15,7 +17,6 @@ if (existingPageIds.some(item => item == pageIdValue)) {
     insertWindowIdToLocalStorage();
 }
 
-
 function insertWindowIdToLocalStorage() {
     localStorage.setItem("entry", pageIdValue);
 
@@ -28,8 +29,9 @@ function insertWindowIdToLocalStorage() {
 
 function removeWindow() {
 
-    var index = existingPageIds.indexOf(pageIdValue);
-    alert(index);
+    var index = existingPageIds.indexOf(JSON.stringify(pageIdValue));
+    
+    console.log("Index in Array: " + index + "\n für zahl: " + pageIdValue)
 
     if (index !== -1) {
         existingPageIds.splice(index, 1);
