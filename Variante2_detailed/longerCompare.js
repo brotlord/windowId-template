@@ -1,21 +1,26 @@
-var pageIdValue = Math.floor(Math.random() * 3);
-var existingPageIds = JSON.parse(localStorage.getItem("pageIds"));
 
-bindUnload();
+window.addEventListener('focus', checkForActiveTabs());
 
-
-console.log("neue random: " + pageIdValue + " \n ExistingPages, die aus Local Storage gezogen wurden: " + existingPageIds)
-
-if(existingPageIds == null) {
-  existingPageIds = [];
-} 
+    var LOCALSTORAGE_KEY = "PAGE_IDs";
+    var pageIdValue = Math.floor(Math.random() * 3);
+    var existingPageIds = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY));
     
-if (existingPageIds.some(item => item == pageIdValue)) {
-    console.log("Die Seite ist schonmal offen");
-    //Logik zum Fenster closen oder neue ID verteilen etc.
-} else {
-    insertWindowIdToLocalStorage();
-}
+    bindUnload();
+    
+    
+    console.log("neue random: " + pageIdValue + " \n ExistingPages, die aus Local Storage gezogen wurden: " + existingPageIds)
+    
+    if(existingPageIds == null) {
+      existingPageIds = [];
+    } 
+        
+    if (existingPageIds.some(item => item == pageIdValue)) {
+        alert("Die Seite ist schonmal offen");
+        //Logik zum Fenster closen oder neue ID verteilen etc.
+    } else {
+        insertWindowIdToLocalStorage();
+    }
+
 
 function insertWindowIdToLocalStorage() {
     localStorage.setItem("entry", pageIdValue);
@@ -24,7 +29,17 @@ function insertWindowIdToLocalStorage() {
     existingPageIds.push(localStorage.getItem("entry"));
 
     //push to browser memory
-    localStorage.setItem("pageIds", JSON.stringify(existingPageIds)); 
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(existingPageIds)); 
+}
+
+//kann womöglich raus
+function checkForActiveTabs() {
+    if (existingPageIds.some(item => item == pageIdValue)) {
+        alert("Die Seite ist immernoch offen");
+        //Logik zum Fenster closen oder neue ID verteilen etc.
+    } else {
+        insertWindowIdToLocalStorage();
+    }
 }
 
 function removeWindow() {
@@ -37,9 +52,11 @@ function removeWindow() {
         existingPageIds.splice(index, 1);
     }
 
-    localStorage.setItem("pageIds", JSON.stringify(existingPageIds));
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(existingPageIds));
 } 
 
+
+//ToDo: Refac mit VisibilityChange oder PageHide > ist aber nur für HIDE
 function bindUnload()
 {
     window.addEventListener('beforeunload', function ()
