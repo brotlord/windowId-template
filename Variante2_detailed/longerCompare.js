@@ -1,24 +1,33 @@
 var LOCALSTORAGE_KEY = "PAGE_IDs";
-var DUPLICATE_ACTIVE = "DUPLICATE_ACTIVE";
+var BLOCKED_PAGES = "BLOCKED_PAGES";
 var pageIdValue = Math.floor(Math.random() * 3);
 var existingPageIds = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY));
+var blockedPagesIds = JSON.parse(localStorage.getItem(BLOCKED_PAGES));
 
-bindUnload();
+bindUnloadAndStorageListeners();
 
 if(existingPageIds == null || existingPageIds === "NaN") {
     existingPageIds = [];
 }
 
+if(blockedPagesIds == null || blockedPagesIds === "NaN") {
+    blockedPagesIds = [];
+}
+
+
 console.log("Neue WindowId-Mock: " + pageIdValue + " \n Existing Window-Ids, die aus Local Storage gezogen wurden: " + existingPageIds);
     
 if (existingPageIds.some(item => item ==  pageIdValue)) {
+
     console.log("Window mit WindowId " + pageIdValue + " ist bereits offen.");
-    //Logik zum Fenster closen oder neue ID verteilaen etc.
-    //Flag setzen, dass wenn Fenster auf active ist und noch nicht verfügbar, dann schließen
+
+    if (!(blockedPagesIds.some(item => item == pageIdValue))) {
+        localStorage.setItem(BLOCKED_PAGES, JSON.stringify(pageIdValue));
+    }
+    
 } else {
     insertWindowIdToLocalStorage();
 }
-
 
 function insertWindowIdToLocalStorage() {
     localStorage.setItem("entry", pageIdValue);
@@ -30,17 +39,6 @@ function insertWindowIdToLocalStorage() {
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(existingPageIds)); 
 
     console.log("Insert WIndow Id in LocalStorage erfolgreich. \nLocalStorage: " + localStorage.getItem(LOCALSTORAGE_KEY));
-}
-
-//kann womöglich raus
-function checkForActiveTabs() {
-    if (existingPageIds.some(item => item == pageIdValue)) {
-        alert("Die Seite ist immernoch offen");
-        //Logik zum Fenster closen oder neue ID verteilen etc.
-        //clear Flag der offenen Fenster
-    } else {
-        insertWindowIdToLocalStorage();
-    }
 }
 
 function removeWindow() {
@@ -55,7 +53,6 @@ function removeWindow() {
 } 
 
 
-//ToDo: Refac mit VisibilityChange oder PageHide > ist aber nur für HIDE
 function bindUnload()
 {
     window.addEventListener('beforeunload', function ()
@@ -67,4 +64,14 @@ function bindUnload()
     {
             removeWindow();
     });
+
+    window.addEventListener("storage", unblockPageIfClosedElsewhere(e));
+}
+
+function unblockPageIfClosedElsewhere(e) {
+    existingPageIds = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY));
+    if (!(existingPageIds.some(item => item == pageIdValue))) {
+        this.alert("Seite wird entblockt");
+        //ToDo: Logik dafür
+    }
 }

@@ -3,7 +3,10 @@
 Für den Fall, dass URLs gleich sind, sich die Window ID aber trotzdem unterscheiden kann.
 Ich hab dafür den Eintrag "pageIds" im localStorage, der die WindowIds abspeichert und vergleicht, wenn neue Tabs geöffnet werden.
 Die WindowId hab ich durch eine Random-Zahl gemockt. 
-Was leider noch nicht geht: den Eintrag aus dem localStorage löschen, wenn das entsprechende Fenster geschlossen wird.
+
+Des weiteren gibt es jetzt einen Speicher für Seiten, die schon offen und deshalb geblockt sind: BLOCKED_PAGES
+Wenn eine Seite mehrmals offen ist, zu der nicht zuerst geöffneten navigiert wird und dann die ursprüngliche Seite geschlossen wird, soll diese dadurch entblockt werden.
+Dazu gibt es den storage-Listener, der dem aktiven Tab Änderungen im Speicher mitteilt, die von anderen Tabs kommen und sich auf den Speicher auswirken.
  
 
 Link zu JS-BIN: https://jsbin.com/mizorapasa/edit?html,css,js,output
